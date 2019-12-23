@@ -16,7 +16,8 @@ namespace RegistroDeCompetenciaBash
     {
         static async Task Main(string[] args)
         {
-            CreateExcel(await GetStudentDataAsync());
+            List<Estudiante> estudiantes = await GetStudentDataAsync();
+            CreateExcel(estudiantes);
         }
 
         static public async Task<List<Estudiante>> GetStudentDataAsync()
@@ -37,7 +38,7 @@ namespace RegistroDeCompetenciaBash
                     GetTableHeaders(excel.Workbook.Worksheets[fileName]);
                     PopulateTable(excel.Workbook.Worksheets[fileName], estudiantes);
 
-                    FileInfo excelFile = new FileInfo(Directory.GetCurrentDirectory() + "\\Test.xlsx");
+                    FileInfo excelFile = new FileInfo(Directory.GetCurrentDirectory() + "\\" + fileName + ".xlsx" );
 
                     excel.SaveAs(excelFile);
                 }
@@ -58,7 +59,6 @@ namespace RegistroDeCompetenciaBash
                 {
                     worksheet.Cells[1, count].Value = "Numero De Estudiante";
                     count++;
-                    var test = item.GetValue(item.Name);
                     continue;
                 }
                 else if(item.Name.ToUpper() == "RECINTOID")
