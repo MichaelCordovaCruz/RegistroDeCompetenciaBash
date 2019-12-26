@@ -1,32 +1,26 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
+using RegistroDeCompetenciaBash.Data;
 using RegistroDeCompetenciaBash.Models;
 
 namespace RegistroDeCompetenciaBash
 {
     class Program
     {
+        static int tableRow = 1;
         static async Task Main(string[] args)
         {
-            List<Estudiante> estudiantes = await GetStudentDataAsync();
-            CreateExcel(estudiantes);
+            CreateExcel(await DbContext.instance.SPGetStudents());
         }
 
-        static public async Task<List<Estudiante>> GetStudentDataAsync()
-        {
-            var response = await new HttpClient().GetStringAsync("https://inter-venture-competition-2020.herokuapp.com/api");
-            return JsonConvert.DeserializeObject<List<Estudiante>>(response);
-        }
-
-        static public void CreateExcel(List<Estudiante> estudiantes)
+        // ------------------------------------ Methods --------------------------------------- //
+        static public void CreateExcel(IEnumerable<Estudiante> estudiantes)
         {
             string fileName = "RegistroDeCompetencia";
 
@@ -71,21 +65,21 @@ namespace RegistroDeCompetenciaBash
                 }
                 count++;
             }
+            
+            tableRow++;
         }
 
-        static public void PopulateTable(ExcelWorksheet worksheet, List<Estudiante> estudiantes)
+        static public void PopulateTable(ExcelWorksheet worksheet, IEnumerable<Estudiante> estudiantes)
         {
-            int count = 2;
-
             foreach(var estudiante in estudiantes)
             {
-                worksheet.Cells[count, 1].Value = estudiante.Id;
-                worksheet.Cells[count, 2].Value = estudiante.Nombre;
-                worksheet.Cells[count, 3].Value = estudiante.ApellidoPaterno;
-                worksheet.Cells[count, 4].Value = estudiante.ApellidoMaterno;
-                worksheet.Cells[count, 5].Value = estudiante.Email;
-                worksheet.Cells[count, 6].Value = estudiante.Recinto.Nombre;
-                count++;
+                worksheet.Cells[tableRow, 1].Value = estudiante.Id;
+                worksheet.Cells[tableRow, 2].Value = estudiante.Nombre;
+                worksheet.Cells[tableRow, 3].Value = estudiante.ApellidoPaterno;
+                worksheet.Cells[tableRow, 4].Value = estudiante.ApellidoMaterno;
+                worksheet.Cells[tableRow, 5].Value = estudiante.Email;
+                worksheet.Cells[tableRow, 6].Value = estudiante.Recinto.Nombre;
+                tableRow++;
             }
         }
 
